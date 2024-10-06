@@ -62,4 +62,13 @@
 --Manufacturer AS Manufaturados
 --FROM dbo.DimProduct
 
---EXERCICO 5:
+--EXERCICO 05:
+
+--SELECT ProductKey
+--FROM DimProduct
+
+--SELECT DISTINCT ProductKey
+--From FactSales
+
+--Conclusão: Um produto não foi vendido.
+--Clicando em mensagens, aparece que um produto não foi vendido, mas queria que a segunda tabela deixasse ordenado, não a "bagunça" que ficou...
