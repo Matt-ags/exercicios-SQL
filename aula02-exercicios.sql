@@ -91,18 +91,30 @@ WHERE FirstName IS NULL
 -- EX 01:
 --A)
 
-/*
-SELECT TOP(100) SalesAmount
+
+SELECT 
+	TOP(100) 
+SalesAmount
 From FactSales
 ORDER BY SalesAmount DESC
 
 --Selecionei e ordenei os 100 com maiores vendas, de ordem decrescente.
-*/
+
 
 --EX 02:
---A)
+
+-- Gabarito:
 
 /*
+SELECT TOP(10) * FROM DimProduct
+ORDER BY UnitPrice DESC, Weight DESC
+
+SELECT TOP(10) * FROM DimProduct
+ORDER BY UnitPrice DESC, Weight DESC, AvailableForSaleDate ASC
+*/
+--A)
+
+
  SELECT TOP(10) 
 
  	UnitPrice,
@@ -117,19 +129,23 @@ ORDER BY UnitPrice DESC, Size DESC, ProductKey DESC, StyleID ASC, ColorName ASC,
 
 
 --A forma que achei melhor organizar:
-*/
 
 --EX 03:
 
+--gabarito:
+
 /*
-SELECT *
+SELECT 
+	ProductName AS 'Nome do produto'
+	Weight  AS 'Peso (libras)'
 FROM DimProduct
 --Transformei 100 quilos em libras (220)
-WHERE Weight>220
+WHERE Weight>100
+ORDER BY Weight DESC
 */
 
 --A)
-/*
+
 SELECT 
 ProductName,
 Weight
@@ -137,11 +153,12 @@ Weight
 FROM DimProduct
 --Transformei 100 quilos em libras (220)
 WHERE Weight>220
-*/
+
 
 --B)
 
-/*
+
+
 SELECT 
 ProductName AS 'Nome Do Produto',
 Weight AS 'Peso'
@@ -149,11 +166,11 @@ Weight AS 'Peso'
 FROM DimProduct
 --Transformei 100 quilos em libras (220)
 WHERE Weight>220
-*/
+
 
 --C)
 
-/*
+
 SELECT 
 ProductName AS 'Nome Do Produto',
 Weight AS 'Peso'
@@ -162,22 +179,31 @@ FROM DimProduct
 --Transformei 100 quilos em libras (220)
 WHERE Weight>220
 ORDER BY Weight DESC
-*/
+
 
 --EX 04:
-
---A)
---Temos 306 lojas
+--Gabarito:
 /*
+SELECT
+	StoreName AS 'NOME DA LOJA',
+	OpenDate AS 'DATA DE ABERTURA',
+	EmployeeCount AS 'QTD FUNCIONARIOS'
+FROM
+	DimStore
+WHERE StoreType = 'Store' AND Status = 'On'
+*/
+--A)
+
+--Temos 306 lojas
+
 SELECT 
 DISTINCT
 StoreName, OpenDate, EmployeeCount
 FROM DimStore
-*/
 
 --B)
 
-/*
+
 
 SELECT 
 
@@ -191,12 +217,12 @@ WHERE CloseDate IS NOT NULL
 
 --TEMOS 12 LOJAS ATIVAS
 
-*/
+
 
 --EX 05:
 --A)
 
-/*
+
 SELECT *
 FROM DimProduct
 
@@ -204,31 +230,32 @@ WHERE ProductName LIKE '%home theater%'
 AND BrandName = 'Litware' 
 AND AvailableForSaleDate ='15/03/2009'
 --O problema era a organização da data:
-*/
+
 
 --EX06:
+
 --A)
 
-/*
+
 SELECT *
 FROM DimStore
 
 WHERE Status = 'Off'
-*/
+
 
 --b) 
 
-/*
+
 SELECT *
 FROM DimStore
 
 WHERE CloseDate IS NOT NULL
-*/
+
 
 --ex07:
 --A)
 
-/*
+
 SELECT * 
 
 FROM dbo.DimStore
@@ -248,36 +275,31 @@ FROM dbo.DimStore
 WHERE EmployeeCount > 51
 
 --Realizei desta forma pois mostra todas as tres tabelas de uma só vez.
-*/
+
 
 --ex08:
 --A)
 
-/*
 SELECT 
 	ProductKey,
 	ProductName,
 	UnitCost
 FROM DimProduct
 WHERE ProductName LIKE '%LCD%'
-*/
 
 --ex09:
 --A)
 
-/*
 SELECT 
 *
 FROM DimProduct
 --Forma de pesquisa com parenteses:
 WHERE ColorName IN ('Green', 'Orange', 'Black', 'Silver', 'Pink') 
 AND Brandname IN ('Contoso', 'Litware', 'Fabrikam')
-*/
 
 --ex10:
 --A)
 
-/*
 SELECT 
 *
 FROM DimProduct
@@ -287,4 +309,3 @@ AND Brandname IN ('Contoso')
 AND UnitPrice  BETWEEN 10 AND 30
 ORDER BY UnitPrice DESC
 --Aparentemente o código para aparecer 16 é trocando a condição de preço para peso.
-*/
