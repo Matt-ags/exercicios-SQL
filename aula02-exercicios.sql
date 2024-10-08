@@ -227,22 +227,64 @@ WHERE CloseDate IS NOT NULL
 
 --ex07:
 --A)
+
+/*
 SELECT * 
 
-FROM DimStore
+FROM dbo.DimStore
 
 WHERE EmployeeCount  BETWEEN 1 AND 20
 
 SELECT * 
 
-FROM DimStore
+FROM dbo.DimStore
 
-WHERE EmployeeCount  BETWEEN 1 AND 20
+WHERE EmployeeCount  BETWEEN 21 AND 50
 
 SELECT * 
 
-FROM DimStore
+FROM dbo.DimStore
 
-WHERE EmployeeCount  BETWEEN 1 AND 20
+WHERE EmployeeCount > 51
 
-FALTA A 07
+--Realizei desta forma pois mostra todas as tres tabelas de uma só vez.
+*/
+
+--ex08:
+--A)
+
+/*
+SELECT 
+	ProductKey,
+	ProductName,
+	UnitCost
+FROM DimProduct
+WHERE ProductName LIKE '%LCD%'
+*/
+
+--ex09:
+--A)
+
+/*
+SELECT 
+*
+FROM DimProduct
+--Forma de pesquisa com parenteses:
+WHERE ColorName IN ('Green', 'Orange', 'Black', 'Silver', 'Pink') 
+AND Brandname IN ('Contoso', 'Litware', 'Fabrikam')
+*/
+
+--ex10:
+--A)
+
+/*
+SELECT 
+*
+FROM DimProduct
+--Forma de pesquisa com parenteses:
+WHERE ColorName IN ('Silver') 
+AND Brandname IN ('Contoso')
+AND UnitPrice  BETWEEN 10 AND 30
+ORDER BY UnitPrice DESC
+--Aparentemente o código para aparecer 16 é trocando a condição de preço para peso.
+*/
