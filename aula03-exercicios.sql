@@ -80,5 +80,43 @@ FROM DimStore
 --ex 4:
 --A)
 
-SELECT *
+SELECT
+	COUNT(FirstName) AS 'Quantidade'
+FROM
+	DimEmployee
+	--WHERE Gender= 'M'
+WHERE Gender= 'F'
+
+--b)
+SELECT TOP(1) 
+	FirstName,
+	HireDate,
+	EmailAddress,
+	Gender
+
 FROM DimEmployee
+
+WHERE Gender = 'F'
+ORDER BY HireDate ASC
+
+SELECT  TOP(1) 
+	FirstName,
+	HireDate,
+	EmailAddress,
+	Gender
+
+	FROM DimEmployee
+
+WHERE Gender = 'M'
+ORDER BY HireDate ASC
+
+
+--EX 05
+--A)
+
+SELECT 
+COUNT(DISTINCT BrandName) AS 'QNT. MARCAS',
+COUNT(DISTINCT ClassID) AS 'QNT. DE CLASSES',
+COUNT(DISTINCT ColorName) AS 'QNT. CORES'
+FROM DimProduct
+
