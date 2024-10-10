@@ -18,7 +18,36 @@ HAVING EM TABELA SECUNDÁRIA, DEPOIS DA FILTRAGEM
 /*EXERCICIOS*/
 
 --EX01
---A) ???
+--A) 
+
+SELECT
+	channelKey,
+	SUM(SalesQuantity)
+FROM 
+	FactSales
+
+GROUP BY channelKey
+
+--b)
+
+SELECT
+	StoreKey,
+	SUM(SalesQuantity),
+	SUM(ReturnQuantity)
+FROM
+	FactSales
+
+GROUP BY StoreKey
+
+--C)
+
+SELECT
+	channelKey,
+	SUM(SalesQuantity)
+FROM
+	FactSales
+WHERE DateKey BETWEEN '01/01/2007' AND '31/12/2007'
+GROUP BY channelKey
 
 --EX 02
 --A)
@@ -30,14 +59,28 @@ SELECT
 FROM FactSales
 WHERE SalesAmount > '5000'
 
+--GABARITO:
+
+SELECT
+	ProductKey,
+	SUM(SalesAmount)
+FROM 
+	FactSales
+GROUP BY ProductKey
+HAVING SUM(SalesAmount) >= 5000000
+ORDER BY SUM(SalesAmount) DESC
+
 --B)
 
 SELECT top(10)
 	ProductKey,
-	SalesAmount
+	SUM(SalesAmount)
 
 FROM FactSales
-ORDER BY SalesAmount DESC
+GROUP BY ProductKey
+ORDER BY SUM(SalesAmount) DESC
+
+
 
 --EX 03
 --A)
@@ -47,32 +90,26 @@ FROM FactOnlineSales
 
 SELECT TOP(1)
 	CustomerKey AS 'ID_CLIENTE',
-	COUNT(CustomerKey) AS 'Total de Compras'
+	SUM(SalesQuantity) 
 FROM 
 	FactOnlineSales
 
 GROUP BY CustomerKey
-ORDER BY COUNT(CustomerKey) DESC
+ORDER BY SUM(SalesQuantity) DESC
 
 
 --B)
 
-SELECT *
-FROM FactOnlineSales
+SELECT
+TOP(3)
+ProductKey AS 'ID DO PRODUTO',
+SUM(SalesQuantity) AS 'TOTAL VENDIDO'
 
-SELECT TOP(3)
-	CustomerKey AS 'ID_CLIENTE',
-	ProductKey AS 'PRODUTO',
-	SalesQuantity,
-	COUNT(ProductKey) AS 'TOTAL COMPRADO'
-FROM 
-	FactOnlineSales
-
-WHERE CustomerKey = '19037'
-GROUP BY CustomerKey
-ORDER BY COUNT(ProductKey) DESC
-
---não sei como raios esta dando errado.
+FROM
+FactOnlineSales
+WHERE CustomerKey = 19037
+GROUP BY ProductKey
+ORDER BY SUM(SalesQuantity) DESC
 
 --EX 04
 --A)
@@ -122,20 +159,31 @@ FROM
 
 GROUP BY BrandName
 
+--nenhuma marca
+
 --EX 7
---A) ??
+--A) 
+
+SELECT
+	Gender AS 'SEXO',
+	COUNT(Gender) AS 'TOTAL'
+FROM
+	DimCustomer
+
+WHERE Gender IS NOT NULL
+GROUP BY Gender
+ORDER BY COUNT(Gender) DESC
 
 -- EX 8
 -- A)
 
-SELECT *
-FROM DimCustomer
-
 SELECT
 	Education AS 'Educação',
+	COUNT(Education) AS 'QNT. total por educação',
 	AVG(YearlyIncome) AS 'Média salarial'
 FROM 
 	DimCustomer
+WHERE Education IS NOT NULL
 GROUP BY Education
 
 -- EX 9
@@ -157,9 +205,13 @@ SELECT *
 FROM DimEmployee
 
 SELECT 
-	SUM(VacationHours) AS 'TOTAL HORAS DE FÉRIAS',
-	Title AS 'CARGO'
-FROM DimEmployee
+	Title,
+	SUM(VacationHours) AS 'TOTAL HORAS DE FÉRIAS'
+FROM 
+DimEmployee
 
-WHERE Gender = 'F' AND DepartmentName = 'Production' 
+WHERE Gender = 'F' 
+AND DepartmentName IN ('Production', 'Marketing', 'Engineering', 'Finance') 
+AND HireDate BETWEEN '1999/01/01' AND '2000/12/31'
+--não entendo a forma da data...
 GROUP BY Title
