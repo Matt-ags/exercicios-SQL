@@ -92,12 +92,15 @@ INNER JOIN Clientes ON Pedidos.ClienteID = Clientes.ClienteID;
 -- EXERCÍCIOS !!!
 
 --1)
+--Objetivo: Exibir o nome de todos os clientes que fizeram pedidos, mostrando também o ID do pedido.
 
 SELECT *
 FROM dbo.Clientes A
 
 SELECT *
 FROM Pedidos B
+
+--code:
 
 SELECT
 	A.NomeCliente,
@@ -107,6 +110,7 @@ FROM
 INNER JOIN Pedidos B ON A.ClienteID = B.ClienteID
 
 --2)
+--Objetivo: Listar todos os clientes, mesmo aqueles que ainda não fizeram pedidos, e exibir o número do pedido (se houver).
 
 SELECT *
 FROM Clientes A
@@ -114,6 +118,8 @@ FROM Clientes A
 SELECT *
 FROM Pedidos B
 	
+--code: 
+
 SELECT 
 	A.NomeCliente,
 	B.PedidoID
@@ -121,67 +127,235 @@ FROM Clientes A
 LEFT JOIN Pedidos B ON A.ClienteID = B.ClienteID
 
 --3)
+-- Objetivo: Combinar os resultados de todos os clientes que estão na tabela de Clientes e aqueles que aparecem na tabela de Pedidos (clientes que fizeram pelo menos um pedido). Evite duplicatas.
+-- UNION: Usado para combinar resultados entre dois ou mais resultados do SELECT
+-- Imagine o union como um "join"
 
-SELECT ClienteID
-FROM Pedidos
+--primeiro selecionamos a tabela "principal":
+
+SELECT 
+	A.NomeCliente
+FROM Clientes A
+
 UNION
-SELECT NomeCliente,
-ClienteID
-FROM Clientes
 
-SELECT NomeCliente FROM Clientes
-UNION
--- Selecionando o nome dos clientes que fizeram pedidos (ligados pelo ClienteID)
-SELECT Clientes.NomeCliente
-FROM Pedidos
-INNER JOIN Clientes ON Pedidos.ClienteID = Clientes.ClienteID;
+--Logo após, colocamos o select que vai ter a "filtragem"
+
+SELECT 
+	A.NomeCliente
+FROM Clientes A
+INNER JOIN Pedidos B ON A.ClienteID = B.ClienteID
+
+--Até que entendi, mas não entendi o porque do resultado dos dois select serem diferentes, tipo, o segundo select não era pra parecer como o resultado de agr? pois ele esta trazendo os ids dos clientes e seu nome.
+
+-- 4) 
+-- Objetivo: Combinar os resultados de todos os clientes da tabela Clientes e aqueles que fizeram pedidos, mostrando todas as ocorrências, inclusive duplicadas.
+-- Mesma coisa que o de cima, só trocar pra "all": 
+
+SELECT 
+	A.NomeCliente
+FROM Clientes A
+
+UNION ALL
+
+SELECT 
+	A.NomeCliente
+FROM Clientes A
+INNER JOIN Pedidos B ON A.ClienteID = B.ClienteID
+
+--5) 
+--Objetivo: Exibir o nome dos clientes, os detalhes dos produtos comprados (nome do produto e quantidade), e a data em que os pedidos foram feitos.
+--Ele pede vários joins, qual que é o "segredo" para não se perder?
+--A cada inner join que for realizado (ou qualquer outro) este se torna o principal, como assim? vamos ver logo abaixo:
+-- ex fala: "Exiba NomeCliente, NomeProduto, Quantidade, e DataPedido."
+--Como sempre, vendo as tabelas que vamos utilizar:
 
 
---?? Não entendi como usar o union, retomar depois...
+SELECT *
+FROM Clientes A
 
--- 4) --tb usa union
+SELECT *
+FROM Pedidos B
 
---5) ?? GABARITO?
+SELECT *
+FROM DetalhesPedidos C
 
--- Selecionando o banco de dados para uso
+SELECT *
+FROM Produtos D
 
---abaixo, é a nova tabela criada para realizar os próximos exercícios, a de descrição!
+--Partindo para nova tabela:
 
-USE LojaDB
-CREATE TABLE DetalhesPedidos (
-    DetalheID INT PRIMARY KEY IDENTITY(1,1),  -- Identificador único para cada linha
-    PedidoID INT,                             -- Relaciona com a tabela Pedidos
-    ProdutoID INT,                            -- Relaciona com a tabela Produtos
-    Quantidade INT,                           -- Quantidade de produtos no pedido
-    FOREIGN KEY (PedidoID) REFERENCES Pedidos(PedidoID),  -- Chave estrangeira para Pedidos
-    FOREIGN KEY (ProdutoID) REFERENCES Produtos(ProdutoID) -- Chave estrangeira para Produtos
-);
+SELECT
+	A.NomeCliente,
+	B.DataPedido,
+	C.Quantidade,
+	D.ProdutoID
+FROM Clientes A
 
--- Inserindo detalhes dos pedidos
-INSERT INTO DetalhesPedidos (PedidoID, ProdutoID, Quantidade)
-VALUES
-(1, 1, 2),  -- Pedido 1 contém 2 unidades do Produto 1
-(1, 2, 1),  -- Pedido 1 contém 1 unidade do Produto 2
-(2, 3, 5),  -- Pedido 2 contém 5 unidades do Produto 3
-(3, 2, 2);  -- Pedido 3 contém 2 unidades do Produto 2
+--Agora é ficar fazer a sequencia de joins, respeitajndo a sequencia:
 
-DELETE FROM DetalhesPedidos
+INNER JOIN Pedidos B ON A.ClienteID = B.ClienteID
+
+--dai vc pensa, "o que a tabela anterior, que dei o join, tem em comum com a próxima? é tal coisa, faz um join com está
+
+INNER JOIN DetalhesPedidos C ON C.PedidoID = B.PedidoID
+
+INNER JOIN Produtos D ON D.ProdutoID = C.ProdutoID
+
+--acho que está certo, só achei estranho que a maria apareceu 3 vezes...
 
 --6)
+--Objetivo: Mostrar quantos tipos de produtos diferentes cada cliente já comprou.
 -- Mostrar quantos tipos de produtos diferentes cada cliente já comprou.
-SELECT *
-FROM Pedidos
 
 SELECT *
-FROM Produtos
+FROM Clientes A
 
 SELECT *
-FROM Clientes
+FROM Pedidos B
 
 SELECT *
-FROM DetalhesPedidos
+FROM DetalhesPedidos C
 
---PONTOS QUE NÃO ENTENDI/ESTOU EM DÚVIDA:
---UNION
---PRINCIPALMENTE USAR VÁRIOS "JOINS" EM UMA CONSULTA, NÃO ENTENDI...
+SELECT *
+FROM Produtos D
 
+-- CODE:
+
+SELECT
+	A.NomeCliente,
+
+	--EX Passa o "cont" abaixo:
+
+	COUNT(DISTINCT C.ProdutoID) AS 'quantidade diferentes de produtos compradas'
+FROM DetalhesPedidos C
+INNER JOIN Pedidos B ON C.PedidoID = B.PedidoID
+
+--Percebe que o exercício pede o nome junto com a quantidade, mas o nome está na tabela CLIEENTES, e não tem nada na tabela CETALHES, que se refere a ela
+-- ASSIM, percorre um caminho para chegar até ela!
+
+INNER JOIN Clientes A ON B.ClienteID = A.ClienteID
+
+--group by é para que o "count" funcione:
+
+GROUP BY NomeCliente
+
+--7)
+--Mostrar a média de itens comprados em cada pedido.
+
+SELECT *
+FROM Clientes A
+
+SELECT *
+FROM Pedidos B
+
+SELECT *
+FROM DetalhesPedidos C
+
+SELECT *
+FROM Produtos D
+
+--code: 
+
+SELECT
+	B.PedidoID,
+	AVG(C.Quantidade) AS 'média itens'
+FROM DetalhesPedidos C
+INNER JOIN Pedidos B ON C.PedidoID = B.PedidoID
+GROUP BY B.PedidoID
+
+--8)
+-- Objetivo: Exibir quantos pedidos foram feitos em cada mês.
+
+SELECT *
+FROM Clientes A
+
+SELECT *
+FROM Pedidos B
+
+SELECT *
+FROM DetalhesPedidos C
+
+SELECT *
+FROM Produtos D
+
+--ex passa alguns tipos de "group by" que nunca vi, mas ok né
+
+SELECT
+
+	MONTH(B.DataPedido) AS 'Mês',
+	COUNT(B.PedidoID) AS 'Numero de pedidos'
+
+FROM Pedidos B
+GROUP BY YEAR(B.DataPedido), MONTH(B.DataPedido)
+
+--9)
+--Objetivo: Mostrar o valor total vendido de produtos, agrupado por categoria de produto.
+
+
+SELECT *
+FROM Clientes A
+
+SELECT *
+FROM Pedidos B
+
+SELECT *
+FROM DetalhesPedidos C
+
+SELECT *
+FROM Produtos D
+
+SELECT *
+FROM Categorias E
+
+--CODE: 
+
+SELECT
+
+	E.NomeCategoria,
+	SUM(C.Quantidade * D.Preco) AS 'Valor total vendido'
+
+FROM DetalhesPedidos C
+INNER JOIN Produtos D ON C.ProdutoID = D.ProdutoID
+INNER JOIN Categorias E ON D.CategoriaID = E.CategoriaID
+GROUP BY E.NomeCategoria 
+
+--10)
+--Objetivo: Exibir o valor total do pedido mais caro de cada cliente.
+
+--1° PEDE PARA ADICIONAR UMA NOV A COLUNA:
+
+ALTER TABLE Pedidos ADD Total DECIMAL(10, 2);
+
+
+UPDATE Pedidos
+SET Total = (
+    SELECT SUM(DetalhesPedidos.Quantidade * Produtos.Preco)
+    FROM DetalhesPedidos
+    INNER JOIN Produtos ON DetalhesPedidos.ProdutoID = Produtos.ProdutoID
+    WHERE DetalhesPedidos.PedidoID = Pedidos.PedidoID
+);
+
+SELECT *
+FROM Clientes A
+
+SELECT *
+FROM Pedidos B
+
+SELECT *
+FROM DetalhesPedidos C
+
+SELECT *
+FROM Produtos D
+
+SELECT *
+FROM Categorias E
+
+--code:
+
+SELECT
+	A.NomeCliente,
+	MAX(B.Total) AS 'Pedido mais caro'
+FROM Clientes A
+INNER JOIN Pedidos B ON A.ClienteID = B.ClienteID
+GROUP BY A.NomeCliente
