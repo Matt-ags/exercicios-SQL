@@ -112,3 +112,35 @@ SET @qpets = 2
 SELECT 'O MEU NOME É ' + @nome + ' NASCI EM ' + FORMAT(CAST(@nascimento AS DATETIME), 'dd/MM/yyyy') + ' TENHO ' + CAST(@qpets AS varchar(10)) + ' PETS'
 
 --Não entendi muito bem como este código funciona..., pq tem que ser varchar???
+
+  --EX 4
+
+USE ContosoRetailDW
+
+DECLARE @lojas VARCHAR(MAX)
+SET @lojas = ''
+
+SELECT 
+@lojas = @lojas + StoreName + ', '
+FROM
+DimStore
+WHERE CloseDate BETWEEN '20080101' AND '20081212'
+
+PRINT 'As lojas fechadas foram: ' + LEFT(@lojas, DATALENGTH(@lojas))
+--Acho que está certo... (apareceu duas lojas)
+
+--EX 05
+--Olhei na tabela, e vi que o id para 'lamps' é 46
+
+DECLARE @produto VARCHAR(MAX)
+SET @produto = ''
+
+SELECT 
+@produto = @produto + ProductName + ', ' + CHAR(10)
+FROM
+DimProduct
+WHERE ProductSubcategoryKey= '46'
+
+PRINT 'Os produtos com a subcategoria LAMPS são: ' + LEFT(@produto, DATALENGTH(@produto) - 3)
+
+
